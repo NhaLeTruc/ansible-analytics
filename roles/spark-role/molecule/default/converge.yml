@@ -1,0 +1,13 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    spark_download_url: http://static.nudorm.net/bigdata/spark-3.2.3-bin-hadoop3.2.tgz
+  tasks:
+    - name: "Include nudorm.spark"
+      ansible.builtin.include_role:
+        name: "nudorm.spark"
+      tags:
+        - ansible
+        - builtin
+        - include_role

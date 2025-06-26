@@ -1,0 +1,24 @@
+---
+profile: production
+
+exclude_paths: []
+skip_list:
+   - schema[meta]
+   - name[casing]
+
+enable_list:
+  - args
+  - empty-string-compare
+  - no-log-password
+  - no-same-owner
+  - yaml
+
+kinds:
+  - playbook: "**/examples/*.{yml,yaml}"
+  - galaxy: "**/folder/galaxy.yml"
+  - tasks: "**/tasks/*.yml"
+  - vars: "**/vars/*.yml"
+  - meta: "**/meta/main.yml"
+  - yaml: "**/*.yamllint"
+
+task_name_prefix: "{stem} | "

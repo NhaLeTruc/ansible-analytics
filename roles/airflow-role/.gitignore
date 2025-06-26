@@ -1,0 +1,9 @@
+tests/cache
+tests/playbook.retry
+tests/__pycache__
+.molecule
+.cache
+tests/roles
+/.vscode
+*.vt100
+/logs

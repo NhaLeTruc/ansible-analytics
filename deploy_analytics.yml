@@ -1,0 +1,29 @@
+---
+- name: Deploy Analytics Stack
+  hosts: localhost # First, run tasks on the Ansible control node itself (often localhost)
+  gather_facts: true # Collect information about the control node
+  any_errors_fatal: true
+  pre_tasks: 
+  # Tasks that run *before* any roles on localhost
+    - name: Include main variables
+      ansible.builtin.include_vars: "roles/common/defaults/main.yml"
+      tags: always
+
+- name: deploy_analytics.yml | Perform pre-checks
+  hosts: all
+  become: true
+  become_method: sudo
+  gather_facts: true
+  any_errors_fatal: true
+  environment: "{{ proxy_env | default({}) }}"
+
+  pre_tasks:
+    - name: deploy_analytics.yml | Include main variables
+      ansible.builtin.include_vars: "roles/common/defaults/main.yml"
+      tags: always
+
+  roles:
+    - role: pre_checks
+      vars:
+        minimal_ansible_version: 2.14.0
+      tags: always

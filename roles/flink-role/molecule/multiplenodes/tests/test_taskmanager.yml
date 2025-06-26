@@ -1,0 +1,15 @@
+---
+
+service:
+  flink-taskmanager:
+    enabled: true
+    running: true
+
+file:
+  /lib/systemd/system/flink-taskmanager.service:
+    exists: true
+    contains:
+      - Environment="LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so"
+      - Environment="AWS_ACCESS_KEY_ID=aa"
+      - Environment="AWS_SECRET_ACCESS_KEY=aa"
+      

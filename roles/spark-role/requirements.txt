@@ -1,0 +1,6 @@
+ansible-lint
+ansible
+molecule[lint,podman]
+yamllint
+flake8
+pytest-molecule

@@ -1,0 +1,28 @@
+---
+- name: Create configuration files
+  ansible.builtin.template:
+    mode: "{{ spark_permission }}"
+    owner: "{{ spark_user }}"
+    group: "{{ spark_group }}"
+    src: "{{ spark_config_template.src }}"
+    dest: "{{ spark_home }}/conf/{{ spark_config_template.dest }}"
+    trim_blocks: true
+    lstrip_blocks: true
+  tags:
+    - template
+  loop:
+    - { src: "env/spark-env.sh.j2", dest: "spark-env.sh" }
+  loop_control:
+    loop_var: spark_config_template
+
+- name: Link environment files
+  ansible.builtin.file:
+    path: "/etc/profile.d/{{ spark_env_file }}"
+    state: link
+    src: "{{ spark_home }}/conf/{{ spark_env_file }}"
+  tags:
+    - file
+  loop:
+    - "spark-env.sh"
+  loop_control:
+    loop_var: spark_env_file

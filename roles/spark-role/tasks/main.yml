@@ -1,0 +1,40 @@
+---
+# tasks file for nudorm.spark
+- name: 'include | Variables based on specific OS criteria'
+  ansible.builtin.include_vars: "{{ vars_file }}"
+  with_fileglob:
+    - "vars/*{{ ansible_system }}.yml"
+    - "vars/*{{ ansible_os_family }}.yml"
+    - "vars/*{{ ansible_os_family }}-{{ ansible_distribution_version }}.yml"
+    - "vars/*{{ ansible_distribution }}.yml"
+    - "vars/*{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+  loop_control:
+    loop_var: vars_file
+  tags:
+    - include_vars
+
+- name: 'include | Tasks based on specific OS criteria'
+  ansible.builtin.include_tasks: "{{ tasks_file }}"
+  with_fileglob:
+    - "tasks/*{{ ansible_system }}.yml"
+    - "tasks/*{{ ansible_os_family }}.yml"
+    - "tasks/*{{ ansible_os_family }}-{{ ansible_distribution_version }}.yml"
+    - "tasks/*{{ ansible_distribution }}.yml"
+    - "tasks/*{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+  loop_control:
+    loop_var: tasks_file
+  tags:
+    - include_tasks
+
+- name: 'include | Installation and configuration tasks'
+  ansible.builtin.include_tasks: "{{ tasks_file }}"
+  with_fileglob:
+    - "tasks/directories.yml"
+    - "tasks/install.yml"
+    - "tasks/configuration.yml"
+    - "tasks/services.yml"
+
+  loop_control:
+    loop_var: tasks_file
+  tags:
+    - include_tasks

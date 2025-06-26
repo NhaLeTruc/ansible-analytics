@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+{% for key, value in spark_env.items() %}
+export {{ key | trim | upper }}="{{ value }}"
+{% endfor %}

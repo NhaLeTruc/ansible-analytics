@@ -1,0 +1,93 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: podman
+platforms:
+  - name: centos_stream9
+    image: docker.io/nudorm/molecule:stream9
+    pre_build_image: true
+    command: '/sbin/init'
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: yes
+    groups:
+      - redhat
+      - centos
+
+  - name: centos_stream8
+    image: docker.io/nudorm/molecule:stream8
+    pre_build_image: true
+    command: '/sbin/init'
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: yes
+    groups:
+      - redhat
+      - centos
+
+  - name: fedora_37
+    image: docker.io/nudorm/molecule:fedora37
+    pre_build_image: true
+    command: '/sbin/init'
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: yes
+    groups:
+      - redhat
+      - centos
+      - fedora
+
+  - name: ubuntu_jammy
+    image: docker.io/nudorm/molecule:jammy
+    pre_build_image: true
+    command: '/lib/systemd/systemd'
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: yes
+    groups:
+      - debian
+      - ubuntu
+
+  - name: ubuntu_focal
+    image: docker.io/nudorm/molecule:focal
+    pre_build_image: true
+    command: '/lib/systemd/systemd'
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: yes
+    groups:
+      - debian
+      - ubuntu
+
+  - name: debian_buster
+    image: docker.io/nudorm/molecule:buster
+    pre_build_image: true
+    command: '/lib/systemd/systemd'
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: yes
+    groups:
+      - debian
+
+  - name: debian_bullseye
+    image: docker.io/nudorm/molecule:bullseye
+    pre_build_image: true
+    command: '/lib/systemd/systemd'
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: yes
+    groups:
+      - debian
+
+provisioner:
+  name: ansible
+
+verifier:
+  name: ansible
+
+lint: |
+  set -e
+  yamllint --strict --config-file .yamllint .
+  ansible-lint --strict --config-file .ansible-lint .
+  flake8

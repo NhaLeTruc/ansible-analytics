@@ -1,0 +1,55 @@
+---
+# defaults file for nudorm.spark
+spark_java_home: /opt/jdk1.8.0_202
+spark_user: root
+spark_group: root
+spark_permission: "0655"
+spark_version: 3.2.3
+spark_installation_path: /opt
+spark_home: "{{ spark_installation_path }}/spark"
+spark_hadoop_home: "{{ spark_installation_path }}/hadoop"
+spark_hadoop_conf: "{{ spark_hadoop_home }}/etc/hadoop"
+spark_yarn_conf: "{{ spark_hadoop_home }}/etc/hadoop"
+spark_data_dir: "{{ spark_installation_path }}/data/spark"
+spark_download_url: "https://dlcdn.apache.org/spark/spark-{{ spark_version }}/spark-{{ spark_version }}-bin-without-hadoop.tgz"
+spark_classpath: "{{ spark_hadoop_home }}/etc/hadoop:{{ spark_hadoop_home }}/share/hadoop/common/lib/*:{{ spark_hadoop_home }}/share/hadoop/common/*:{{ spark_hadoop_home }}/share/hadoop/hdfs:{{ spark_hadoop_home }}/share/hadoop/hdfs/lib/*:{{ spark_hadoop_home }}/share/hadoop/hdfs/*:{{ spark_hadoop_home }}/share/hadoop/mapreduce/*:{{ spark_hadoop_home }}/share/hadoop/yarn:{{ spark_hadoop_home }}/share/hadoop/yarn/lib/*:{{ spark_hadoop_home }}/share/hadoop/yarn/*"
+spark_service_master: false
+spark_service_worker: false
+spark_master_host: 'localhost'
+spark_master_port: '7077'
+spark_no_daemonize: '1'
+
+spark_env:
+  JAVA_HOME: "{{ spark_java_home }}"
+  HADOOP_CONF_DIR: "{{ spark_hadoop_conf }}"
+  # MESOS_NATIVE_JAVA_LIBRARY:
+  # MKL_NUM_THREADS:
+  # OPENBLAS_NUM_THREADS:
+  SPARK_CONF_DIR: "{{ spark_home }}/conf"
+  SPARK_DAEMON_CLASSPATH: "{{ spark_classpath }} "
+  # SPARK_DAEMON_JAVA_OPTS:
+  # SPARK_DAEMON_MEMORY:
+  # SPARK_DRIVER_MEMORY:
+  # SPARK_EXECUTOR_CORES:
+  # SPARK_EXECUTOR_MEMORY:
+  # SPARK_HISTORY_OPTS:
+  # SPARK_IDENT_STRING:
+  # SPARK_LAUNCHER_OPTS:
+  # SPARK_LOCAL_DIRS:
+  # SPARK_LOCAL_IP:
+  # SPARK_LOG_DIR:
+  # SPARK_LOG_MAX_FILES:
+  SPARK_MASTER_HOST: "{{ spark_master_host }}"
+  # SPARK_MASTER_OPTS:
+  SPARK_MASTER_PORT: "{{ spark_master_port }}"
+  # SPARK_NICENESS:
+  SPARK_NO_DAEMONIZE: "{{ spark_no_daemonize }}"
+  # SPARK_PID_DIR:
+  # SPARK_PUBLIC_DNS:
+  # SPARK_SHUFFLE_OPTS:
+  # SPARK_WORKER_CORES:
+  # SPARK_WORKER_DIR:
+  # SPARK_WORKER_MEMORY:
+  # SPARK_WORKER_OPTS:
+  # SPARK_WORKER_PORT:
+  YARN_CONF_DIR: "{{ spark_yarn_conf }}"

@@ -1,0 +1,16 @@
+---
+- name: Create directories
+  ansible.builtin.file:
+    path: "{{ directory_path }}"
+    state: directory
+    mode: "{{ spark_permission }}"
+    owner: "{{ spark_user }}"
+    group: "{{ spark_group }}"
+  tags:
+    - file
+  loop:
+    - "{{ spark_installation_path }}"
+    - "{{ spark_home }}"
+    - "{{ spark_data_dir }}"
+  loop_control:
+    loop_var: directory_path

@@ -1,0 +1,41 @@
+---
+- hosts: all
+  strategy: free
+  tasks:
+    - name: Create spark user
+      ansible.builtin.user:
+        name: spark
+        state: present
+      tags:
+        - user
+
+    - name: Download JDK8
+      ansible.builtin.get_url:
+        url: http://static.nudorm.net/jdk-8u202-linux-x64.tar.gz
+        dest: /opt
+      tags:
+        - get_url
+
+    - name: Unpack JDK8
+      ansible.builtin.unarchive:
+        src: /opt/jdk-8u202-linux-x64.tar.gz
+        dest: /opt
+        remote_src: true
+      tags:
+        - unarchive
+
+    - name: Delete JDK8 archive
+      ansible.builtin.file:
+        path: /opt/jdk-8u202-linux-x64.tar.gz
+        state: absent
+      tags:
+        - file
+
+- hosts: debian
+  tasks:
+    - name: Install required packages
+      ansible.builtin.package:
+        name: ca-certificates
+        state: latest
+      tags:
+        - package

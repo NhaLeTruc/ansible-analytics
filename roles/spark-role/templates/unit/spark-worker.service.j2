@@ -1,0 +1,17 @@
+[Unit]
+Description=spark
+After=network.target
+
+[Service]
+{% for key, value in spark_env.items() %}
+Environment={{ key | trim | upper }}="{{ value }}"
+{% endfor %}
+Type=simple
+WorkingDirectory={{ spark_home }}
+User={{ spark_user }}
+ExecStart={{ spark_home }}/sbin/start-worker.sh spark://{{ spark_master_host }}:{{ spark_master_port }}
+ExecStop={{ spark_home }}/sbin/stop-worker.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,39 @@
+---
+- name: Create service files
+  ansible.builtin.template:
+    mode: "{{ spark_permission }}"
+    owner: "{{ spark_user }}"
+    group: "{{ spark_group }}"
+    src: "{{ spark_unit_template.src }}"
+    dest: "/etc/systemd/system/{{ spark_unit_template.dest }}"
+    trim_blocks: true
+    lstrip_blocks: true
+  tags:
+    - template
+  loop:
+    - { src: "unit/spark-master.service.j2", dest: "spark-master.service" }
+    - { src: "unit/spark-worker.service.j2", dest: "spark-worker.service" }
+  loop_control:
+    loop_var: spark_unit_template
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Start Spark Master
+  ansible.builtin.systemd:
+    name: spark-master
+    state: started
+    enabled: true
+  tags:
+    - service
+  when: spark_service_master
+
+- name: Start Spark Worker
+  ansible.builtin.systemd:
+    name: spark-worker
+    state: started
+    enabled: true
+  tags:
+    - service
+  when: spark_service_worker

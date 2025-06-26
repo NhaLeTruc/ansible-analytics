@@ -1,0 +1,37 @@
+---
+- name: Set spark download package name
+  ansible.builtin.set_fact:
+    spark_download_file: "{{ spark_download_url | split('/') | last }}"
+  tags:
+    - set_fact
+
+- name: Check if spark has been downloaded already
+  ansible.builtin.stat:
+    path: "{{ spark_download_file }}"
+  tags:
+    - stat
+  register: reg_spark_download_file
+
+- name: Download spark
+  ansible.builtin.get_url:
+    url: "{{ spark_download_url }}"
+    dest: "{{ spark_installation_path }}"
+    mode: "{{ spark_permission }}"
+    owner: "{{ spark_user }}"
+    group: "{{ spark_group }}"
+  tags:
+    - get_url
+  when: reg_spark_download_file.stat.exists == false
+
+- name: Unpack spark
+  ansible.builtin.unarchive:
+    src: "{{ spark_installation_path }}/{{ spark_download_file }}"
+    remote_src: true
+    dest: "{{ spark_home }}"
+    mode: "{{ spark_permission }}"
+    owner: "{{ spark_user }}"
+    group: "{{ spark_group }}"
+    extra_opts:
+      - "--strip-components=1"
+  tags:
+    - unarchive

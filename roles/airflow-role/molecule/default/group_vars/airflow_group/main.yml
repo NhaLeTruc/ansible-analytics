@@ -1,0 +1,53 @@
+---
+
+airflow_webserver_host: 0.0.0.0
+airflow_flower_port: 5555
+airflow_flower_host: 0.0.0.0
+
+airflow_cfg_base:
+  - section: core
+    settings:
+      load_examples: true
+      fernet_key: xKy13nPFfDflJ0DYGVTwf_DEmbItfURHlEDxrt-bBQw= # Example keys
+  - section: webserver
+    settings:
+      secret_key: "ihadsf908auw0340684" # Example keys
+
+airflow_admin_users:
+  - name: Erwin
+    username: erwin
+    password: 5urv3yC0rpsFTW
+    role: Admin
+    firstname: Erwin
+    lastname: Smith
+    email: erwin@attack.com
+
+airflow_regular_users:
+  - name: Levi
+    username: levi
+    password: strongerThanU
+    role: Public
+    firstname: Levi
+    lastname: Ackerman
+    email: levi@attack.com
+  - name: Eren
+    username: eren
+    password: 104thGraduated
+    role: Public
+    firstname: Eren
+    lastname: Yeager
+    email: eren@attack.com
+
+airflow_required_python_packages:
+  - { name: SQLAlchemy }
+  - { name: psycopg2-binary }
+  - { name: pandas }
+
+airflow_extra_packages:
+  - celery
+  - cgroups
+  - ftp
+  - http
+  - jdbc
+  - sftp
+  - ssh

@@ -1,0 +1,20 @@
+# Molecule managed
+
+{% if item.registry is defined %}
+FROM --platform={{ item.platform | default('amd64') }} {{ item.registry.url }}/{{ item.image }}
+{% else %}
+FROM --platform={{ item.platform | default('amd64') }} {{ item.image }}
+{% endif %}
+
+{% if 'debian' in item.image %}
+RUN apt-get update && \
+    apt-get install -y python3 sudo bash ca-certificates iproute2 systemd systemd-sysv python3-pip && \
+    apt-get clean
+{% else %}
+RUN apt-get update && \
+    apt-get install -y python sudo bash ca-certificates iproute2 systemd systemd-sysv python-pip && \
+    apt-get clean
+{% endif %}
+
+STOPSIGNAL SIGRTMIN+3
+RUN systemctl set-default multi-user.target

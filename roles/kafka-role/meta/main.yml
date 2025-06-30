@@ -1,18 +1,29 @@
 ---
-
 galaxy_info:
+  author: Simon Leigh
+  namespace: sleighzy
   role_name: kafka
-  author: idealista
-  company: Idealista S.A.U.
-  description: Ansible role for Kafka distributed streaming platform
-  min_ansible_version: 2.9.9
-  license: Apache 2.0
+  description: Apache Kafka installation for RHEL/CentOS and Debian/Ubuntu
+  license: MIT
+  min_ansible_version: 2.10.4
   platforms:
+    - name: EL
+      versions:
+        - '6'
+        - '7'
+        - '8'
     - name: Debian
       versions:
-        - bullseye
+        - buster
+    - name: Ubuntu
+      versions:
+        - bionic
+        - focal
   galaxy_tags:
     - clustering
-    - queue
     - kafka
-    - events
+    - messaging
+    - pubsub
+    - streaming
+
+dependencies: []

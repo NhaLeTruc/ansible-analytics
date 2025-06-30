@@ -1,7 +1,0 @@
----
-
-- name: Restart kafka
-  systemd:
-    name: kafka
-    state: restarted
-  when: kafka_service_state != 'stopped'

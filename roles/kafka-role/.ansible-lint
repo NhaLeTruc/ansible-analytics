@@ -1,11 +1,9 @@
----
-
 exclude_paths:
-  - ./molecule
-  - ./.github
-parseable: true
+  - ./molecule-venv/
+  - ./tests/roles/
+
+mock_roles:
+  - sleighzy.zookeeper
+
 skip_list:
-  - '204'
-  - schema[moves]
-use_default_rules: true
-verbosity: 1
+  - '106' # Role name does not match ``^[a-z][a-z0-9_]+$`` pattern

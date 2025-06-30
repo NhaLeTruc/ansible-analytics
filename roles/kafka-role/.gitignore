@@ -1,15 +1,11 @@
-tests/playbook.retry
-tests/.cache
-tests/__pycache__
-.pytest_cache
-.molecule
-.vagrant
-.cache
+# General file ignores
+.DS_Store
+.vscode
+super-linter.log
 
-*.iml
-.idea
-.project
+# Symlink to current repository to enable Ansible to find the role
+# using its expected full name for Molecule tests
+.cache/
 
-*.pyc
-# Pipfile
-# Pipfile.lock
+# Python virtual env for Molecule testing
+molecule-venv/

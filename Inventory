@@ -1,16 +1,16 @@
-[Kafka]
+[kafka]
 
 
-[Airflow]
+[airflow]
 
 
-[Flink]
+[flink]
 
 
-[Spark]
+[spark]
 
 
-[SparkStreaming]
+[sparkstreaming]
 
 
-[Minio]
+[minio]

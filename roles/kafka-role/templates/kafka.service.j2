@@ -1,30 +1,19 @@
+#
+# {{ ansible_managed }}
+#
 [Unit]
-Description=Apache Kafka
-Documentation=http://kafka.apache.org/documentation.html
-Requires=network.target
+Description=Kafka: Scalable Queuing System
 After=network.target
 
 [Service]
 Type=simple
-StandardOutput=null
-Environment="KAFKA_HEAP_OPTS={{ kafka_java_heap }}"
-Environment="LOG_DIR={{ kafka_log_dir }}"
-{% if kafka_opts is defined %}
-Environment="KAFKA_OPTS={{ kafka_opts }}"
-{% endif %}
-{% if kafka_extra_args is defined %}
-Environment="EXTRA_ARGS={{ kafka_extra_args }}"
-{% endif %}
-{% if kafka_jmx_port is defined %}
-Environment="JMX_PORT={{ kafka_jmx_port }}"
-{% endif %}
-ExecStart={{ kafka_dir }}/bin/kafka-server-start.sh /etc/kafka/server.properties
-ExecStop={{ kafka_dir }}/bin/kafka-server-stop.sh
-User={{ kafka_user }}
-Group={{ kafka_group }}
-Restart=on-failure
-LimitNOFILE=infinity
-SuccessExitStatus=143
+EnvironmentFile=-/etc/sysconfig/kafka
+User={{ kafka_user}}
+Group={{ kafka_user_group }}
+WorkingDirectory={{ kafka_home }}
+ExecStart={{ kafka_home }}/bin/kafka-server-start.sh {{ kafka__config_path }}
+ExecStop={{ kafka_home }}/bin/kafka-server-stop.sh {{ kafka__config_path }}
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

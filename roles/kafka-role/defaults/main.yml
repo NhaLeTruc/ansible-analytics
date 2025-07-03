@@ -1,0 +1,59 @@
+---
+kafka_user: kafka
+kafka_user_group: kafka
+kafka_home: /opt/kafka
+kafka_version: 4.0.0
+kafka_scala_version: 2.13
+kafka_java_version: 17
+kafka_install_dependencies: false
+# if kafka_checksum is defined role will use that value instead getting checksum from kafka downloads page
+# kafka_checksum: >
+#   sha512: B8679283 A2D8DAB8 6E7C636B 2C688FE9 D9E64AC4
+#   37241F65 EF7A1733 F4D26A2B D415EEFA 04F09F19 11373BCD
+#   2A5DBC38 38C76347 F6865642 5C09202C D290CE91
+kafka_download_directory: /opt
+kafka_log_directory: /var/log/kafka # this is actual kafka service log desitnation. not to be confused with kafka logs
+kafka_replication_factor: 1
+kafka_heap_size: 1G
+kafka_opts: [] # this can be list or string
+# - -XX:NewSize=256m
+kafka_additional_config: {}
+#  message.max.bytes: 1000
+
+kafka_topics: []
+# - name: topic1
+# - name: topic2
+#   replication_factor: 3
+#   partitions: 10
+
+# Socket Server Settings
+kafka_num_network_threads: 3
+kafka_num_io_threads: 8
+kafka_socket_send_buffer_bytes: 102400
+kafka_socket_recieve_buffer_bytes: 102400
+kafka_socket_request_max_bytes: 104857600
+kafka_inter_broker_listener_name: PLAINTEXT
+kafka_listeners: []
+#  - PLAINTEXT://:9092
+#  - CONTROLLER://:9093
+
+## Log retention policy
+kafka_log_retention_hours: 24
+kafka_log_retention_bytes: 0 # when set to zero this setting is ignored
+kafka_log_retention_check_interval_ms: 300000
+kafka_log_segment_bytes: 1073741824
+
+## Log basics
+kafka_num_partitions: 1
+kafka_log_dirs:
+  - /data/kafka
+
+## Server basics
+kafka_node_roles:
+  - broker
+  - controller
+
+## Internal topic settings
+kafka_offsets_topic_replication_factor: 1
+kafka_transaction_state_log_replication_factor: 1
+kafka_transaction_state_log_min_isr: 1

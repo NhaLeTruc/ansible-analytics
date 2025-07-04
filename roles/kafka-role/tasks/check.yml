@@ -1,0 +1,21 @@
+###########################################################################
+### Checking Cluster is Running Properly after Installation             ###
+###########################################################################
+
+- name: Kafka | Check | Systemd Service
+  ansible.builtin.import_tasks: check/service.yml
+  tags:
+    - kafka_check
+    - kafka_check_service
+
+- name: Kafka | Check | Cluster Quorum
+  ansible.builtin.import_tasks: check/quorum.yml
+  tags:
+    - kafka_check
+    - kafka_check_quorum
+
+- name: Kafka | Check | Commands
+  ansible.builtin.import_tasks: check/commands.yml
+  tags:
+    - kafka_check
+    - kafka_check_commands

@@ -29,8 +29,20 @@
 #       tags: always
 
 - name: Deploy Kafka
-  hosts: kafka
+  hosts: kafka_cluster
   become: true
   become_method: sudo
   roles:
     - role: kafka-role
+      kafka_heap_size: 2G
+      kafka_topics:
+        - name: topic1
+        - name: topic2
+          replication_factor: 1
+          partitions: 10
+      # adding config that is not defined by role
+      kafka_additional_config:
+        message.max.bytes: 10000
+      # adding kafka startup options
+      kafka_opts:
+        - -XX:NewSize=256m

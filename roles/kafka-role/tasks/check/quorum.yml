@@ -1,0 +1,40 @@
+###########################################################################
+### Cluster Checks :: Metadata Quorum                                   ###
+###########################################################################
+
+- name: Kafka | Check | Metadata quorum
+  tags:
+    - kafka_check
+  when: inventory_hostname in groups['kafka_brokers']
+  block:
+    - name: Run kafka-metadata-quorum check
+      ansible.builtin.shell: >
+        set -o pipefail &&
+        /opt/kafka/kafka_{{ kafka_scala_version }}-{{ kafka_version }}/bin/kafka-metadata-quorum.sh
+        --bootstrap-server {{ ansible_host }}:{{ kafka_broker_port }}
+        describe --status
+        | grep -v 'HighWatermark'
+      register: kafka_metadata_output
+      changed_when: false
+      failed_when: kafka_metadata_output.rc != 0
+
+    - name: Debug metadata output
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}: {{ kafka_metadata_output.stdout }}"
+
+    - name: Aggregate metadata outputs from broker nodes
+      ansible.builtin.set_fact:
+        metadata_list: "{{ metadata_list | default([]) + [hostvars[item].kafka_metadata_output.stdout | default('')] }}"
+      loop: "{{ groups['kafka_brokers'] }}"
+      run_once: true
+      delegate_to: localhost
+      tags: kafka_metadata
+
+    - name: Assert metadata outputs are identical on all broker nodes
+      ansible.builtin.assert:
+        that:
+          - metadata_list | unique | length == 1
+        fail_msg: "Kafka metadata outputs differ among nodes: {{ metadata_list }}"
+      run_once: true
+      delegate_to: localhost
+      tags: kafka_metadata

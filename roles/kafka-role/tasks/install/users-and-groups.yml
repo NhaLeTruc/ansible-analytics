@@ -1,0 +1,12 @@
+###########################################################################
+### Installation Tasks :: Ensuring Required Users and Groups            ###
+###########################################################################
+
+- name: Kafka | Install | Ensure Kafka User
+  ansible.builtin.user:
+    name: "{{ kafka_user }}"
+    comment: "Kafka User"
+    shell: /bin/nologin
+    create_home: false
+    system: true
+    state: present

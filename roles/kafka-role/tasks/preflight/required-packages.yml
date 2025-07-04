@@ -1,0 +1,12 @@
+###########################################################################
+### Preflight Tasks :: Fetching Tools Required for Kafka Installation   ###
+###########################################################################
+
+- name: Kafka | Preflight | Ensure Required Packages
+  ansible.builtin.dnf:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - wget
+    - unzip
+    - tar

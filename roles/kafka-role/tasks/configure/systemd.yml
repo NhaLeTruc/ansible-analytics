@@ -1,0 +1,38 @@
+###########################################################################
+### Configuration :: Kafka Systemd Unit                                 ###
+###########################################################################
+
+- name: Kafka | Configure | Discover and set JAVA_HOME fact
+  block:
+    - name: Discover JAVA_HOME for the package specified in kafka_java_packages
+      ansible.builtin.shell:
+        cmd: "set -o pipefail && readlink -f $(which java) | sed 's|/bin/java$||'"
+      register: java_home
+      changed_when: false
+
+    - name: Debug JAVA_HOME discover command output
+      ansible.builtin.debug:
+        var: java_home
+      changed_when: false
+
+    - name: Set JAVA_HOME fact
+      ansible.builtin.set_fact:
+        kafka_java_home: "{{ java_home.stdout }}"
+      changed_when: false
+
+- name: Kafka | Configure | Render Systemd Unit Template
+  ansible.builtin.template:
+    src: "kafka.service.j2"
+    dest: "/etc/systemd/system/kafka.service"
+    owner: "{{ kafka_user }}"
+    group: "{{ kafka_user }}"
+    mode: "0644"
+  notify:
+    - Reload Systemd Daemon
+    - Restart Kafka Service
+
+- name: Kafka | Configure | Ensure Kafka service is enabled and started
+  ansible.builtin.systemd:
+    name: kafka.service
+    enabled: true
+    state: started

@@ -1,0 +1,14 @@
+###########################################################################
+### Cluster Checks :: Kafka Service on all Nodes                        ###
+###########################################################################
+
+- name: Kafka | Check | Systemd service
+  tags:
+    - kafka_check
+  block:
+    - name: Check Kafka service status with systemd
+      ansible.builtin.systemd:
+        name: kafka.service
+        state: started
+      check_mode: true
+      register: kafka_status

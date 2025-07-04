@@ -1,0 +1,12 @@
+###########################################################################
+### Configuration :: KRaft                                              ###
+###########################################################################
+
+
+- name: Kafka | Configure | Render KRaft server-properties
+  ansible.builtin.template:
+    src: "kraft-server-properties.j2"
+    dest: "{{ kafka_folder_binaries }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}/config/kraft/server.properties"
+    owner: "{{ kafka_user }}"
+    group: "{{ kafka_user }}"
+    mode: "0644"

@@ -1,84 +1,73 @@
-# Ansible kafka role
+# Ansible Role to Install and Configure Kafka in KRaft Mode
 
-Ansible role for install kafka with KRaft mode on Debian and RedHat distributions. KRaft is marked production ready in version 3.3.1 so this role should be used to deploy kafka version equal or greater than 3.3.1.
+To configure topics/partitions/ACLs and stuff on already deployed Kafka
+cluster use [Kafka-admin Ansible modules](https://galaxy.ansible.com/ui/standalone/roles/StephenSorriaux/kafka-admin/documentation)
 
-Tested with ubuntu 22.04 and AlmaLinux 8, but should work with most distros, especially when not using this role to install dependencies. See `kafka_install_dependencies` variable.
+## Variables
 
-For more info check [changelog](https://github.com/dragomirr/ansible-role-kafka/blob/main/CHANGELOG.md).
+The following variables must be defined:
 
-## Requirements
+- `kafka_node_id` must be set for each node via host_vars
+- `kafka_brokers` and `kafka_kraft_controllers` subgroups must be present in
+  inventory file
 
-* x86_64 arch on servers that will run kafka
-* ansible 2.15 -- did not test with other versions, but probably would work with anything equal or greater than version 2.10
-* Java installed -- version 8(deprecated), 11 or 17. -- `apt install openjdk-17-jre-headless` or `dnf install java-17-openjdk-headless`
-* For ubuntu setfacl from `acl` package -- `apt install acl`
+The rest of the variables are optional and have [default values](defaults/main.yml)
 
-## Role Variables
+### Sample Inventory section
 
-Required:
-
-  * `kafka_node_id` -- kafka node id. Must be integer or zero and unique per host.
-
-Optional:
-
-  * `kafka_topics` -- list of kafka topics with topic settings.
-  * `kafka_install_dependencies` -- should java be installed and also `acl` for Debian based distributions. For now it can be installed using role setting this to `true`.
-  * `kafka_config_path` -- if unset config will be deployed to kafka home. Should not be set to default config location as subsequent role runs will not be idempotent and will cause kafka restart.
-  * `kafka_additional_config` -- specify map of config parameters that are not defined by role.
-  * `kafka_opts` -- specify list or string of kafka options to run at startup. From this variable `KAFKA_OPTS` environment variable will be created.
-
-## Dependencies
-
-None with `kafka_install_dependencies=true`. For other cases look at the requirements section.
+```yaml
+kafka_cluster:
+  children:
+    kafka_brokers:
+      hosts:
+        kafka-sockshop-a-1-broker:
+          kafka_node_id: 1
+          ansible_host: 172.31.0.36
+        kafka-sockshop-b-1-broker:
+          kafka_node_id: 2
+          ansible_host: 172.31.16.26
+        kafka-sockshop-c-1-broker:
+          kafka_node_id: 3
+          ansible_host: 172.31.32.35
+    kafka_kraft_controllers:
+      hosts:
+        kafka-sockshop-a-1-controller:
+          kafka_node_id: 4
+          ansible_host: 172.31.0.37
+        kafka-sockshop-b-1-controller:
+          kafka_node_id: 5
+          ansible_host: 172.31.16.27
+        kafka-sockshop-c-1-controller:
+          kafka_node_id: 6
+          ansible_host: 172.31.32.36
+```
 
 ## Example Playbook
 
-Install role using ansible-galaxy `ansible-galaxy install dragomirr.kafka`
-
-
-    - hosts: servers
-      roles:
-         - role: dragomirr.kafka
-           # setting kafka_node_id in play is only valid if you have 1 kafka node
-           # if you have multiple kafka nodes you need to set unique kafka_node_id for each node
-           kafka_node_id: 0
-           kafka_heap_size: 2G
-           kafka_install_dependencies: true
-           kafka_topics:
-             - name: topic1
-             - name: topic2
-               replication_factor: 1
-               partitions: 10
-          # adding config that is not defined by role
-          kafka_additional_config:
-            message.max.bytes: 10000
-          # adding kafka startup options
-          kafka_opts:
-            - -XX:NewSize=256m
-
-## License
-
-GPL3
-
-## Testing
-
-Testing is done using [molecule](https://molecule.readthedocs.io/) with [virtualbox](https://www.virtualbox.org/) and [vagrant](https://www.vagrantup.com/)
-
-There are 3 scenarios:
-
-  * Default scenario using 1 instance.
-  * Cluster scenario using 3 instances with both controller and broker role for all instances.
-  * Cluster combined scenario using 6 instances where 3 are in broker and controller role and 3 in only broker role.
-
-Run tests:
-
-```bash
-# install molecule
-pip install molecule
-
-# install vagrant plugin
-pip install molecule-plugins[vagrant]
-
-# run test
-molecule test
+```yaml
+- name: Configure Kafka
+  hosts: kafka_cluster
+  become: true
+  tasks:
+    - name: Include Kafka Role
+      ansible.builtin.include_role:
+        name: kafka
+      tags:
+        - kafka_preflight
+        - kafka_preflight_java
+        - kafka_preflight_packages
+        - kafka_install
+        - kafka_configure
+        - kafka_configure_kraft
+        - kafka_configure_storage
+        - kafka_configure_systemd
+        - kafka_check
+        - kafka_check_service
+        - kafka_check_quorum
+        - kafka_check_commands
 ```
+
+> Full list of tags is provided here. You can drop the once you don't need
+> or all of them if you want to run the full role
+
+## Role Structure

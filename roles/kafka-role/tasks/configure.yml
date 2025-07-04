@@ -1,0 +1,22 @@
+###########################################################################
+### Configuration Tasks :: Initial Cluster Configuration                ###
+###########################################################################
+
+
+- name: Kafka | Configure | KRaft
+  ansible.builtin.import_tasks: configure/kraft.yml
+  tags:
+    - kafka_configure
+    - kafka_configure_kraft
+
+- name: Kafka | Configure | Storage
+  ansible.builtin.import_tasks: configure/storage.yml
+  tags:
+    - kafka_configure
+    - kafka_configure_storage
+
+- name: Kafka | Configure | Systemd Unit
+  ansible.builtin.import_tasks: configure/systemd.yml
+  tags:
+    - kafka_configure
+    - kafka_configure_systemd

@@ -1,0 +1,27 @@
+###########################################################################
+### Installation Tasks :: Download and Untar Binaries                   ###
+###########################################################################
+
+- name: Kafka | Install | Download Kafka Binaries
+  ansible.builtin.get_url:
+    url: "https://dlcdn.apache.org/kafka/{{ kafka_version }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}.tgz"
+    dest: "/tmp/kafka.tar.gz"
+    mode: "0644"
+  register: download_result
+  until: download_result is succeeded
+  retries: 3
+  delay: 5
+
+- name: Kafka | Install | Untar Kafka
+  ansible.builtin.unarchive:
+    src: "/tmp/kafka.tar.gz"
+    dest: "{{ kafka_folder_binaries }}"
+    owner: "{{ kafka_user }}"
+    group: "{{ kafka_user }}"
+    remote_src: true
+  when: not ansible_check_mode # Not running in check_mode since src file won't exist
+
+- name: Kafka | Install | Remove Kafka Tarball
+  ansible.builtin.file:
+    path: "/tmp/kafka.tar.gz"
+    state: absent

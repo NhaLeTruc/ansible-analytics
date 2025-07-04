@@ -1,7 +1,0 @@
----
-- name: Converge
-  hosts: all
-  tasks:
-    - name: "Include dragomirr.kafka"
-      ansible.builtin.include_role:
-        name: "dragomirr.kafka"

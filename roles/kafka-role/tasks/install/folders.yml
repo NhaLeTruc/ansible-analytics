@@ -1,0 +1,16 @@
+###########################################################################
+### Installation Tasks :: Ensuring Required Folders                     ###
+###########################################################################
+
+- name: Kafka | Install | Ensure Kafka Folders
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ kafka_user }}"
+    group: "{{ kafka_user }}"
+    mode: "0755"
+  loop:
+    - "{{ kafka_folder_binaries }}"
+    - "{{ kafka_folder_config }}"
+    - "{{ kafka_folder_app_logs }}"
+    - "{{ kafka_folder_broker_logs_and_data }}"

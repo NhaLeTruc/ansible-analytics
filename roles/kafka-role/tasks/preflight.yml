@@ -1,0 +1,16 @@
+###########################################################################
+### Preflight Tasks                                                     ###
+###########################################################################
+
+
+- name: Kafka | Preflight | Ensure Required Packages
+  ansible.builtin.import_tasks: preflight/required-packages.yml
+  tags:
+    - kafka_preflight
+    - kafka_preflight_packages
+
+- name: Kafka | Preflight | Set up Java
+  ansible.builtin.import_tasks: preflight/setup-java.yml
+  tags:
+    - kafka_preflight
+    - kafka_preflight_java

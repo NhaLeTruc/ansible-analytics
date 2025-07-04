@@ -1,0 +1,44 @@
+###########################################################################
+### Configuration :: Kafka Storage                                      ###
+###########################################################################
+
+- name: Kafka | Configure | Storage | Check if storage is already formatted
+  ansible.builtin.stat:
+    path: "{{ kafka_folder_broker_logs_and_data }}/meta.properties"
+  register: kafka_storage_stat
+
+- name: Debug Kafka storage stat
+  ansible.builtin.debug:
+    var: kafka_storage_stat
+
+- name: Kafka | Configure | Storage | Set up Kafka Storage
+  when: not kafka_storage_stat.stat.exists
+  block:
+    - name: Generate Kafka cluster UUID on first controller node if needed
+      ansible.builtin.command: "{{ kafka_folder_binaries }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}/bin/kafka-storage.sh random-uuid"
+      register: kafka_storage_uuid
+      run_once: true
+      changed_when: true
+      delegate_to: "{{ groups['kafka_kraft_controllers'][0] }}"
+
+    - name: Debug Kafka storage UUID
+      ansible.builtin.debug:
+        var: kafka_storage_uuid
+
+    - name: Set cluster UUID fact
+      ansible.builtin.set_fact:
+        cluster_uuid: "{{ kafka_storage_uuid.stdout }}"
+      run_once: true
+
+    - name: Format Kafka storage if not formatted
+      ansible.builtin.command:
+        argv:
+          - "{{ kafka_folder_binaries }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}/bin/kafka-storage.sh"
+          - format
+          - "-t"
+          - "{{ cluster_uuid }}"
+          - "-c"
+          - "{{ kafka_folder_binaries }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}/config/kraft/server.properties"
+          - "--ignore-formatted"
+      args:
+        creates: "{{ kafka_folder_broker_logs_and_data }}/meta.properties"

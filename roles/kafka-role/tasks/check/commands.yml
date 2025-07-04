@@ -1,0 +1,24 @@
+###########################################################################
+### Cluster Checks :: Running Commands on Brokers                       ###
+###########################################################################
+
+- name: Kafka | Check | Try running some commands on brokers
+  tags:
+    - kafka_check
+  when: inventory_hostname in groups['kafka_brokers']
+  block:
+    - name: Verify kafka-topics command works on each broker
+      ansible.builtin.command: >
+        /opt/kafka/kafka_{{ kafka_scala_version }}-{{ kafka_version }}/bin/kafka-topics.sh
+        --bootstrap-server {{ ansible_host }}:{{ kafka_broker_port }} --list
+      changed_when: false
+      register: topics_result
+      failed_when: topics_result.rc != 0
+
+    - name: Verify kafka-broker-api-versions command works on
+      ansible.builtin.command: >
+        /opt/kafka/kafka_{{ kafka_scala_version }}-{{ kafka_version }}/bin/kafka-broker-api-versions.sh
+        --bootstrap-server {{ ansible_host }}:{{ kafka_broker_port }}
+      changed_when: false
+      register: api_versions_result
+      failed_when: api_versions_result.rc != 0

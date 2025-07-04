@@ -1,0 +1,22 @@
+###########################################################################
+### Preflight Tasks :: Installing Java                                  ###
+###########################################################################
+
+- name: Kafka | Preflight | Java Setup [DNF]
+  when: ansible_os_family == 'RedHat'
+  block:
+    - name: Gather installed packages info
+      ansible.builtin.package_facts:
+        manager: dnf
+
+    - name: Remove all java-related packages if target package is not installed
+      ansible.builtin.dnf:
+        name: "java*"
+        state: absent
+      when:
+        - kafka_java_package not in ansible_facts.packages
+
+    - name: Ensure Java is installed
+      ansible.builtin.dnf:
+        name: "{{ kafka_java_package }}"
+        state: present

@@ -1,7 +1,8 @@
----
-- name: Restart Kafka
-  become: true
+- name: Reload Systemd Daemon
   ansible.builtin.systemd:
-    name: kafka
-    state: restarted
     daemon_reload: true
+
+- name: Restart Kafka Service
+  ansible.builtin.systemd:
+    name: kafka.service
+    state: restarted

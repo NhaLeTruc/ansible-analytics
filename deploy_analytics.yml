@@ -32,6 +32,7 @@
   hosts: kafka_cluster
   become: true
   become_method: sudo
+  gather_facts: true
   roles:
     - role: kafka-role
       kafka_heap_size: 2G

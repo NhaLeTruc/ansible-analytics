@@ -6,7 +6,7 @@
   block:
     - name: Discover JAVA_HOME for the package specified in kafka_java_packages
       ansible.builtin.shell:
-        cmd: "set -o pipefail && readlink -f $(which java) | sed 's|/bin/java$||'"
+        cmd: 'readlink -f /usr/bin/javac | sed "s:/bin/javac::"'
       register: java_home
       changed_when: false
 

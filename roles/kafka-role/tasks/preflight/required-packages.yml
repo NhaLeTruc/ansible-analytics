@@ -3,7 +3,7 @@
 ###########################################################################
 
 - name: Kafka | Preflight | Ensure Required Packages
-  ansible.builtin.apt:
+  ansible.builtin.dnf:
     name: "{{ item }}"
     state: present
   loop:

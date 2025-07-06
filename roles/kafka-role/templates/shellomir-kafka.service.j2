@@ -1,0 +1,23 @@
+# Ansible Managed
+[Unit]
+Description=Apache Kafka Server
+Documentation=http://kafka.apache.org/documentation.html
+
+[Service]
+Type=simple
+User={{ kafka_user }}
+Group={{ kafka_user }}
+Environment=JAVA_HOME={{ kafka_java_home }}
+Environment=KAFKA_GC_LOG_OPTS={{ kafka_java_gc_log_opts }}
+Environment=KAFKA_LOG_DIR={{ kafka_folder_app_logs }}
+{% if kafka_opts is defined %}
+Environment=KAFKA_OPTS={{ kafka_opts }}
+{% endif %}
+ExecStart={{ kafka_folder_binaries }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}/bin/kafka-server-start.sh \
+  {{ kafka_folder_binaries }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}/config/kraft/server.properties
+ExecStop={{ kafka_folder_binaries }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}/bin/kafka-server-stop.sh \
+  {{ kafka_folder_binaries }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}/config/kraft/server.properties
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

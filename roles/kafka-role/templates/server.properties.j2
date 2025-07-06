@@ -15,98 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#
 # This configuration file is intended for use in ZK-based mode, where Apache ZooKeeper is required.
 # See kafka.server.KafkaConfig for additional details and defaults
-#
 
-#
-# This configuration file is intended for use in KRaft mode, where
-# Apache ZooKeeper is not present.
-#
-
-############################# Broker Basics #############################
-
-# The essential configurations are the following:
-# node.id
-# log.dirs
-# process.roles
-# controller.quorum.bootstrap.servers
-
-# The node ID associated with the roles this process is playing when `process.roles` is non-empty. 
-# This is required configuration when running in KRaft mode.
-# Type: Int
-# Importance: high
-node.id={{ kafka_node_id }}
-
-# The roles that this process plays: 'broker', 'controller', or 'broker,controller' if it is both.
-# Valid Value: [broker, controller]
-# Type: list
-# Importance: high
-process.roles={{ kafka_process_roles }}
-
-# The maximum allowed timeout for adding partitions to transactions on the server side.
-# It only applies to the actual add partition operations, not the verification.
-# It will not be effective if it is larger than `request.timeout.ms`
-# Type: Int
-# Default: 100
-# add.partitions.to.txn.retry.backoff.max.ms=
-
-# The server-side retry backoff when the server attemptsto add the partition to the transaction.
-# Type: Int
-# Default: 20
-# add.partitions.to.txn.retry.backoff.ms=
-
-# Specifies the listener addresses that the Kafka brokers will advertise to clients and other brokers. 
-# The config is useful where the actual listener configuration listeners does not represent the addresses that clients should use to connect, such as in cloud environments. 
-# The addresses are published to and managed by the controller, the brokers pull these data from the controller as needed. In IaaS environments, this may need to be different from the interface to which the broker binds. 
-# If this is not set, the value for listeners will be used. Unlike listeners, it is not valid to advertise the 0.0.0.0 meta-address.
-# Also unlike listeners, there can be duplicated ports in this property, so that one listener can be configured to advertise another listener's address.
-# This can be useful in some cases where external load balancers are used.
-# Type: string
-# Default: null
-# advertised.listeners=
-
-# Enable auto creation of topic on the server.
-# Type: boolean
-# Default: true
-# auto.create.topics.enable=
-
-# Enables auto leader balancing. A background thread checks the distribution of partition leaders at regular intervals, configurable by leader.imbalance.check.interval.seconds.
-# If the leader is imbalanced, leader rebalance to the preferred leader for partitions is triggered.
-# Type: boolean
-# Default: true
-# auto.leader.rebalance.enable=
-
-# The number of threads to use for various background processing tasks.
-# Type: Int
-# Default: 10
-# background.threads=
+############################# Server Basics #############################
 
 # The id of the broker. This must be set to a unique integer for each broker.
-# Type: Int
-# Default: -1 # next available integer
 broker.id={{ kafka_broker_id }}
-
-# Specify the final compression type for a given topic. This configuration accepts the standard compression codecs ('gzip', 'snappy', 'lz4', 'zstd').
-# It additionally accepts 'uncompressed' which is equivalent to no compression; and 'producer' which means retain the original compression codec set by the producer.
-# Type:	string
-# Default: producer
-# Valid Values:	[uncompressed, zstd, lz4, snappy, gzip, producer]
-# compression.type=
-
-# A comma-separated list of the names of the listeners used by the controller.
-# This is required when communicating with the controller quorum, the broker will always use the first listener in this list.
-# Type: string
-# Default: null
-# controller.listener.names=
-
-# List of endpoints to use for bootstrapping the cluster metadata. 
-# The endpoints are specified in comma-separated list of {host}:{port} entries. 
-# For example: localhost:9092,localhost:9093,localhost:9094.
-# Type: list
-# Default: ""
-# controller.quorum.bootstrap.servers=
 
 # Enable auto creation of topic on the server
 auto.create.topics.enable={{ kafka_auto_create_topics_enable }}
@@ -253,3 +168,34 @@ log.cleaner.backoff.ms={{ kafka_log_cleaner_backoff_ms }}
 # We override this to 0 here as it makes for a better out-of-the-box experience for development and testing.
 # However, in production environments the default value of 3 seconds is more suitable as this will help to avoid unnecessary, and potentially expensive, rebalances during application startup.
 group.initial.rebalance.delay.ms={{ kafka_group_initial_rebalance_delay_ms }}
+
+{% if kafka_listener_auth is defined %}
+############################# AUTHENTICATION #############################
+  {% for type in kafka_listener_auth %}
+    {{ type.name }} required \
+  {% for user in type.users %}
+    user_{{ user.user }}="{{ user.pass }}" \
+  {% endfor %}
+    username="{{ type.username }}" \
+    password="{{ type.password }}";
+  {% endfor %}
+{% endif %}
+
+{% if kafka_sasl_enabled_mechanisms is defined %}
+sasl.enabled.mechanisms={{ kafka_sasl_enabled_mechanisms }}
+{% endif %}
+{% if kafka_ssl is defined %}
+ssl.cipher.suites={{ kafka_ssl.cipher_suites }}
+ssl.truststore.location={{ kafka_ssl.truststore_location }}
+ssl.truststore.password={{ kafka_ssl.truststore_password }}
+ssl.keystore.location={{ kafka_ssl.keystore_location }}
+ssl.keystore.password={{ kafka_ssl.keystore_password }}
+ssl.key.password={{ kafka_ssl.key_password }}
+ssl.client.auth={{ kafka_ssl.client_auth }}
+ssl.truststore.type={{ kafka_ssl.truststore_type | default('jks') }}
+ssl.keystore.type={{ kafka_ssl.keystore_type | default('jks') }}
+{% endif %}
+
+{% for key, value in (kafka_server_config_params | default({})).items() %}
+{{key}}={{value}}
+{% endfor %}

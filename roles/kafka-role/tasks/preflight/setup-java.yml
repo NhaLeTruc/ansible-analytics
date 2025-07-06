@@ -10,13 +10,13 @@
         manager: dnf
 
     - name: Remove all java-related packages if target package is not installed
-      ansible.builtin.apt:
+      ansible.builtin.dnf:
         name: "java*"
         state: absent
       when:
         - kafka_java_package not in ansible_facts.packages
 
     - name: Ensure Java is installed
-      ansible.builtin.apt:
+      ansible.builtin.dnf:
         name: "{{ kafka_java_package }}"
         state: present

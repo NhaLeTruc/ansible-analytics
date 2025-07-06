@@ -1,23 +1,31 @@
-# Ansible Managed
 [Unit]
-Description=Apache Kafka Server
+Description=Apache Kafka
 Documentation=http://kafka.apache.org/documentation.html
+Requires=network.target
+After=network.target
 
 [Service]
 Type=simple
-User={{ kafka_user }}
-Group={{ kafka_user }}
-Environment=JAVA_HOME={{ kafka_java_home }}
-Environment=KAFKA_GC_LOG_OPTS={{ kafka_java_gc_log_opts }}
-Environment=KAFKA_LOG_DIR={{ kafka_folder_app_logs }}
+StandardOutput=null
+Environment="KAFKA_HEAP_OPTS={{ kafka_java_heap }}"
+Environment="LOG_DIR={{ kafka_log_dir }}"
 {% if kafka_opts is defined %}
-Environment=KAFKA_OPTS={{ kafka_opts }}
+Environment="KAFKA_OPTS={{ kafka_opts }}"
 {% endif %}
-ExecStart={{ kafka_folder_binaries }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}/bin/kafka-server-start.sh \
-  {{ kafka_folder_binaries }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}/config/kraft/server.properties
-ExecStop={{ kafka_folder_binaries }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}/bin/kafka-server-stop.sh \
-  {{ kafka_folder_binaries }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}/config/kraft/server.properties
+{% if kafka_extra_args is defined %}
+Environment="EXTRA_ARGS={{ kafka_extra_args }}"
+{% endif %}
+{% if kafka_jmx_port is defined %}
+Environment="JMX_PORT={{ kafka_jmx_port }}"
+{% endif %}
+ExecStart={{ kafka_dir }}/bin/kafka-server-start.sh /etc/kafka/server.properties
+ExecStop={{ kafka_dir }}/bin/kafka-server-stop.sh
+User={{ kafka_user }}
+Group={{ kafka_group }}
 Restart=on-failure
+LimitNOFILE=infinity
+SuccessExitStatus=143
 
 [Install]
 WantedBy=multi-user.target
+Alias=kafka.service
